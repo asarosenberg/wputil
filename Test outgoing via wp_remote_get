@@ -1,0 +1,17 @@
+<?php
+
+define('WP_USE_THEMES', false);
+require ('./wp-blog-header.php');
+
+$response = wp_remote_get( 'https://www.wordpress.org' );
+ 
+if ( is_array( $response ) && ! is_wp_error( $response ) ) {
+    $headers = $response['headers']; // array of http header lines
+    $body    = $response['body']; // use the content
+}
+
+echo '<pre>';
+var_dump($response['headers']);
+echo(htmlspecialchars($response['body']));
+echo '</pre>';
+exit;
