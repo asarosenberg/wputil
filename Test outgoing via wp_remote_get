@@ -6,8 +6,8 @@ require ('./wp-blog-header.php');
 $response = wp_remote_get( 'https://www.wordpress.org' );
  
 if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-    $headers = $response['headers']; // array of http header lines
-    $body    = $response['body']; // use the content
+    $headers = $response['headers'];
+    $body    = $response['body'];
 }
 
 echo '<pre>';
