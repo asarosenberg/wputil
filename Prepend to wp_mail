@@ -1,0 +1,10 @@
+add_filter('wp_mail','jira_directives', 10,1);
+function jira_directives($args){
+	# If the email contains a certain word
+	if (strpos($args['message'], 'word') !== false) {
+		# Prepend a string with some Jira directives
+		$prepend = "\n@project=<project_name>\n@assignee=<username>\n@description=".$args['subject']."\n\n";
+		$args['message'] = 	$prepend.$args['message'];
+	}
+    return $args;
+}
