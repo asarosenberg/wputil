@@ -1,0 +1,62 @@
+<?php
+
+define('WP_USE_THEMES', false);
+require ('./wp-blog-header.php');
+
+function can_perform_loopback() {
+		$cookies = wp_unslash( $_COOKIE );
+        var_dump($cookies);
+        echo '<br/><br/>';
+		$timeout = 10;
+		$headers = array(
+			'Cache-Control' => 'no-cache',
+		);
+		/** This filter is documented in wp-includes/class-wp-http-streams.php */
+		$sslverify = apply_filters( 'https_local_ssl_verify', false );
+
+		// Include Basic auth in loopback requests.
+		if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $_SERVER['PHP_AUTH_PW'] ) ) {
+			$headers['Authorization'] = 'Basic ' . base64_encode( wp_unslash( $_SERVER['PHP_AUTH_USER'] ) . ':' . wp_unslash( $_SERVER['PHP_AUTH_PW'] ) );
+		}
+
+		$url = admin_url();
+
+		$r = wp_remote_get( $url, compact( 'cookies', 'headers', 'timeout', 'sslverify' ) );
+
+		if ( is_wp_error( $r ) ) {
+			return (object) array(
+				'status'  => 'critical',
+				'message' => sprintf(
+					'%s<br>%s',
+					__( 'The loopback request to your site failed, this means features relying on them are not currently working as expected.' ),
+					sprintf(
+						/* translators: 1: The WordPress error message. 2: The WordPress error code. */
+						__( 'Error: %1$s (%2$s)' ),
+						$r->get_error_message(),
+						$r->get_error_code()
+					)
+				),
+			);
+		}
+
+		if ( 200 !== wp_remote_retrieve_response_code( $r ) ) {
+			return (object) array(
+				'status'  => 'recommended',
+				'message' => sprintf(
+					/* translators: %d: The HTTP response code returned. */
+					__( 'The loopback request returned an unexpected http status code, %d, it was not possible to determine if this will prevent features from working as expected.' ),
+					wp_remote_retrieve_response_code( $r )
+				),
+			);
+		}
+
+		return (object) array(
+			'status'  => 'good',
+			'message' => __( 'The loopback request to your site completed successfully.' ),
+		);
+	}	
+	
+	
+var_dump(can_perform_loopback());
+	
+exit;
