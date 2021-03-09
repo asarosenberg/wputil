@@ -1,4 +1,5 @@
 # Create a user session in WordPress assuming the role of user with id 1
+# In most cases you don't want to use this. Create a new user instead with wp-cli or something.
 
 <?php
 $root = $_SERVER['DOCUMENT_ROOT']; 
